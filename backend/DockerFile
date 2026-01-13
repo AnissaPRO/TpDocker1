@@ -1,0 +1,34 @@
+FROM debian:12-slim
+
+# 1. Installation de Python et des outils système
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Création d'une arborescence complexe
+RUN mkdir -p /opt/cloud-api/app \
+    && mkdir -p /opt/cloud-api/data \
+    && mkdir -p /opt/cloud-api/scripts
+
+# 3. Gestion des variables d'environnement (Arguments attendus)
+ENV API_VERSION=1.0.0
+ENV DATA_PATH=/opt/cloud-api/data
+
+# 4. Script de démarrage personnalisé pour gérer le SIGTERM
+COPY ./scripts/start.sh /opt/cloud-api/scripts/start.sh
+RUN chmod +x /opt/cloud-api/scripts/start.sh
+
+WORKDIR /opt/cloud-api/app
+COPY ./requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
+
+COPY ./app.py .
+
+# 5. Sécurisation : on ne lance pas en root
+RUN useradd -m apiuser && chown -R apiuser:apiuser /opt/cloud-api
+USER apiuser
+
+# 6. Entrypoint via le script pour intercepter les signaux
+ENTRYPOINT ["/opt/cloud-api/scripts/start.sh"]

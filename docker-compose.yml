@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # --- IMAGE 1 : LE SERVEUR DE JEU (Backend de service) ---
+  game-service:
+    build: ./game-server
+    container_name: cloud-game-engine
+    # Limitation des ressources (Critère Barème)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'    # Maximum 1 cœur CPU
+          memory: 1G     # Maximum 1 Go de RAM
+    networks:
+      - cloud-network
+    restart: always
+
+  # --- IMAGE 2 : L'API (Backend métier) ---
+  api-cloud:
+    build: ./backend
+    container_name: cloud-api
+    # Dépendance entre containers (Critère Barème)
+    depends_on:
+      game-service:
+        condition: service_started
+    # On passe des arguments au run pour customiser l'allocation
+    environment:
+      - API_ENV=production
+      - GAME_SERVER_HOST=game-service
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - cloud-network
+
+  # --- IMAGE 3 : L'INTERFACE (Frontend) ---
+  interface-web:
+    build: ./frontend
+    container_name: cloud-portal
+    ports:
+      - "8080:80" 
+    volumes:
+      - ./frontend/src:/var/www/my-cloud/html
+    depends_on:
+      - api-cloud
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+    networks:
+      - cloud-network
+
+# Définition d'un réseau privé pour que les containers se parlent
+networks:
+  cloud-network:
+    driver: bridge

@@ -1,0 +1,34 @@
+FROM ubuntu:22.04
+
+# 1. Éviter les questions interactives d'Ubuntu pendant l'install
+ARG DEBIAN_FRONTEND=noninteractive
+
+# 2. Installation Java et outils de monitoring
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jre-headless \
+    htop \
+    net-tools \
+    && mkdir -p /home/game/server
+
+# 3. Personnalisation : On crée un "Mot de bienvenue" système
+RUN echo "Bienvenue sur le Cloud Game Server" > /etc/motd && \
+    echo "cat /etc/motd" >> /root/.bashrc
+
+# 4. Installation du binaire (Hello World Simulation)
+WORKDIR /home/game/server
+RUN mkdir -p ./bin && touch ./bin/game-server.jar
+
+# 5. Gestion des ports spécifiques
+EXPOSE 25565
+
+# 6. Commande de lancement avec allocation mémoire dynamique
+# Ces arguments seront passés par le docker-compose
+CMD ["java", "-Xmx1024M", "-jar", "game-server.jar"]
+
+# 7. Script d'entrée pour simuler le serveur en fonctionnement continu
+# On utilise 'exec' à l'intérieur du script pour que le processus remplace le shell
+RUN echo '#!/bin/sh \n echo "Game Server Starting..." \n exec sh -c "while true; do echo Game Server Running...; sleep 60; done"' > /home/game/server/entrypoint.sh
+RUN chmod +x /home/game/server/entrypoint.sh
+
+# On appelle le script directement
+ENTRYPOINT ["/home/game/server/entrypoint.sh"]

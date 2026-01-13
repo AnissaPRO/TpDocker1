@@ -1,0 +1,26 @@
+# 1. Image de base OS minimaliste
+FROM alpine:3.18
+
+# 2. Installation de Nginx et création de l'arborescence
+RUN apk update && apk add --no-cache nginx && \
+    mkdir -p /var/www/my-cloud/html && \
+    mkdir -p /var/www/my-cloud/logs && \
+    # Création d'un lien symbolique pour les logs vers la sortie standard de Docker
+    ln -sf /dev/stdout /var/www/my-cloud/logs/access.log && \
+    ln -sf /dev/stderr /var/www/my-cloud/logs/error.log
+
+# 3. Personnalisation de l'OS (Permissions)
+RUN adduser -D -u 1000 cloud-admin && \
+    chown -R cloud-admin:cloud-admin /var/www/my-cloud
+
+# 4. Configuration personnalisée (on remplace la conf par défaut)
+COPY ./custom-nginx.conf /etc/nginx/http.d/default.conf
+COPY ./src/index.html /var/www/my-cloud/html/index.html
+
+WORKDIR /var/www/my-cloud
+
+# 5. On expose le port
+EXPOSE 80
+
+# 6. Entrypoint (Nginx doit rester au 1er plan pour Docker)
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
