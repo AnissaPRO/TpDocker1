@@ -7,7 +7,7 @@ Architecture micro-services conteneurisée pour le déploiement d'un serveur de 
 L'infrastructure est segmentée en trois services isolés communiquant sur un réseau privé Docker.
 
 
-### 1. Game Server (Ubuntu 22.04)** : 
+### 1. Game Server (Ubuntu 22.04) : 
 
 Instance dédiée à l'exécution du moteur de jeu. Intègre Java 17, `htop` pour le monitoring et `curl` pour la communication inter-conteneurs. C'est ici que toute la logique du jeu a lieu.
 
@@ -22,7 +22,7 @@ Instance dédiée à l'exécution du moteur de jeu. Intègre Java 17, `htop` pou
 * **htop & net-tools** : Outils de diagnostic bas niveau pour surveiller l'utilisation des ressources et l'ouverture des ports réseau lors du debugging interactif.
 
 
-### 2. Back-end API (Debian 12 Slim)** :
+### 2. Back-end API (Debian 12 Slim) :
 
 Point d'entrée pour la persistance des données et la centralisation des logs. Utilise Python/Flask avec Gunicorn pour la stabilité.
 
@@ -37,7 +37,7 @@ Point d'entrée pour la persistance des données et la centralisation des logs. 
 * **ENV DATA_PATH** : En définissant des variables d'environnement, on permets à Python de savoir où lire/écrire des données sans "coder en dur" le chemin. C'est flexible : on pourrait changer le dossier de données sans modifier le code.
 
 
-### 3. Web Interface (Alpine Linux)** 
+### 3. Web Interface (Alpine Linux) 
 
 Proxy Nginx léger servant l'interface d'administration. On y retrouve le dashboard avec les données telle que le monitoring, le nombre de joueurs connectés en temps réel.
 
