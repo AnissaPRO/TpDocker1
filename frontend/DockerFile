@@ -13,7 +13,7 @@ RUN apk update && apk add --no-cache nginx && \
 RUN adduser -D -u 1000 cloud-admin && \
     chown -R cloud-admin:cloud-admin /var/www/my-cloud
 
-# 4. Configuration personnalisée (on remplace la conf par défaut)
+# 4. Configuration personnalisée 
 COPY ./custom-nginx.conf /etc/nginx/http.d/default.conf
 COPY ./src/index.html /var/www/my-cloud/html/index.html
 
@@ -22,5 +22,6 @@ WORKDIR /var/www/my-cloud
 # 5. On expose le port
 EXPOSE 80
 
-# 6. Entrypoint (Nginx doit rester au 1er plan pour Docker)
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# 6. Entrypoint 
+ENTRYPOINT ["nginx"]
+CMD ["-g", "daemon off;"]

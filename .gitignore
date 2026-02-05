@@ -1,0 +1,35 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.env
+
+# --- Java (Game Server) ---
+*.class
+*.log
+*.jar
+!bin/game-server.jar
+.project
+.classpath
+.settings/
+
+# --- Docker ---
+.docker-proxy
+.docker-desktop
+# On ignore les données persistantes locales si tu en crées
+back-end/data/*
+!back-end/data/.gitkeep
+
+# --- OS & IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# --- Logs ---
+*.log
+logs/

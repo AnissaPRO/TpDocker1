@@ -1,7 +1,4 @@
 #!/bin/bash
-# Ce script reçoit le signal de Docker (SIGTERM) 
-# 'exec' remplace le script par le processus Python (PID 1)
-# Sans 'exec', Python ne recevrait jamais l'ordre de s'arrêter proprement.
-
-echo "Démarrage de l'API Cloud..."
-exec python3 /opt/cloud-api/app/app.py
+echo "Démarrage de l'API Cloud (Gunicorn)..."
+# exec permet à gunicorn de devenir le PID 1 et de recevoir le SIGTERM
+exec gunicorn -w 2 -b 0.0.0.0:5000 app.app:app
