@@ -88,14 +88,14 @@ Si on lances Python en direct, il peut s'arrêter brutalement. Le script start.s
 ## 🚀 Déploiement
 
 1.  **Lancement global** :
-    ```bash
+    ```
     docker-compose up --build
     ```
 
 2.  **Test de communication inter-services** :
     Exécuter depuis l'hôte pour simuler un événement venant du jeu vers l'API :
 
-    ```powershell
+    ```
    docker exec -it cloud-game-engine curl -X POST http://cloud-api:5000/game-event -H "Content-Type: application/json" -d '{\"type\":\"test\",\"message\":\"Liaison_OK\"}'
     ```
 
